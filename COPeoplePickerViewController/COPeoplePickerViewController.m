@@ -426,7 +426,7 @@ static NSString *kCORecordRef = @"record";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   COEmailTableCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
-  [self.tokenField processToken:cell.emailAddressLabel.text associatedRecord:cell.associatedRecord];
+  [self.tokenField processToken:cell.nameLabel.text associatedRecord:cell.associatedRecord];
 }
 
 @end
