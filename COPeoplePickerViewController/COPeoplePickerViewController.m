@@ -381,13 +381,14 @@ static NSString *kCORecordRef = @"record";
 }
 
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
+  NSString *name = CFBridgingRelease(ABRecordCopyCompositeName(person));
   ABMutableMultiValueRef multi = ABRecordCopyValue(person, property);
   NSString *email = CFBridgingRelease(ABMultiValueCopyValueAtIndex(multi, identifier));
   CFRelease(multi);
   
   COPerson *record = [[COPerson alloc] initWithABRecordRef:person];
   
-  [self.tokenField processToken:email associatedRecord:record];
+  [self.tokenField processToken:name associatedRecord:record];
   [self dismissModalViewControllerAnimated:YES];
   
   return NO;
