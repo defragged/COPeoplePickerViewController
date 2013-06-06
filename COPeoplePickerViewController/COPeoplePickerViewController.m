@@ -172,6 +172,13 @@ COSynth(shadowLayer)
   }
 }
 
+-(void)cancelPressed:(id)sender{
+  if ([self.delegate respondsToSelector:@selector(peoplePickerViewControllerDidFinishPicking:)]) {
+    self.tokenField.tokens = nil;
+    [self.delegate peoplePickerViewControllerDidFinishPicking:self];
+  }
+}
+
 - (void)loadView {
   [super loadView];
   UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", nil)
@@ -179,6 +186,11 @@ COSynth(shadowLayer)
                                                                target:self
                                                                action:@selector(done:)];
   self.navigationItem.rightBarButtonItem = rightItem;
+    
+  UIBarButtonItem *leftItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                           target:self
+                                                                           action:@selector(cancelPressed:)];
+  self.navigationItem.leftBarButtonItem = leftItem;
 }
 
 - (void)viewDidLoad {  
