@@ -78,3 +78,9 @@
 - (void)peoplePickerViewControllerDidFinishPicking:(COPeoplePickerViewController *)controller;
 
 @end
+
+@interface NSString (COValidation)
+
+-(BOOL)co_isEmail;
+
+@end
