@@ -60,6 +60,8 @@
 
 - (id)initWithABRecordRef:(ABRecordRef)record;
 
++ (instancetype)personWithEmailAddress:(NSString*)address;
+
 @end
 
 @interface CORecord : NSObject
@@ -74,5 +76,11 @@
 @optional
 
 - (void)peoplePickerViewControllerDidFinishPicking:(COPeoplePickerViewController *)controller;
+
+@end
+
+@interface NSString (COValidation)
+
+-(BOOL)co_isEmail;
 
 @end
