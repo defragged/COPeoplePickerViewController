@@ -60,6 +60,8 @@
 
 - (id)initWithABRecordRef:(ABRecordRef)record;
 
++ (instancetype)personWithEmailAddress:(NSString*)address;
+
 @end
 
 @interface CORecord : NSObject

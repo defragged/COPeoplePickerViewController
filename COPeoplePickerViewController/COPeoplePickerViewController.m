@@ -75,6 +75,7 @@
 - (void)modifySelectedToken;
 - (void)processToken:(NSString *)tokenText associatedRecord:(COPerson *)record;
 - (void)tokenInputChanged:(id)sender;
+- (void)tokenizeAllText;
 
 @end
 
@@ -167,6 +168,9 @@ COSynth(shadowLayer)
 }
 
 - (void)done:(id)sender {
+  
+  [self.tokenField tokenizeAllText];
+  
   if ([self.delegate respondsToSelector:@selector(peoplePickerViewControllerDidFinishPicking:)]) {
     [self.delegate peoplePickerViewControllerDidFinishPicking:self];
   }
@@ -622,6 +626,12 @@ static NSString *kCOTokenFieldDetectorString = @"\u200B";
 }
 
 - (void)processToken:(NSString *)tokenText associatedRecord:(COPerson *)record {
+  
+  if(!record){
+    // We're tokenizing a string entered by the user with no associated record yet
+    record = [COPerson personWithEmailAddress:tokenText];
+  }
+  
   COToken *token = [COToken tokenWithTitle:tokenText associatedObject:record container:self];
   [token addTarget:self action:@selector(selectToken:) forControlEvents:UIControlEventTouchUpInside];
   [self.tokens addObject:token];
@@ -639,6 +649,14 @@ static NSString *kCOTokenFieldDetectorString = @"\u200B";
     return [text substringFromIndex:1];
   }
   return text;
+}
+
+-(void)tokenizeAllText{
+  NSString *text = [self textWithoutDetector];
+  if([text length] > 0){
+    [self processToken:text
+      associatedRecord:nil];
+  }
 }
 
 static BOOL containsString(NSString *haystack, NSString *needle) {
@@ -700,9 +718,9 @@ static BOOL containsString(NSString *haystack, NSString *needle) {
   if (textField.hidden) {
     return NO;
   }
-  NSString *text = self.textField.text;
-  if ([text length] > 1) {
-    [self processToken:[text substringFromIndex:1] associatedRecord:nil];
+  NSString *text = self.textWithoutDetector;
+  if ([text length] > 0) {
+    [self tokenizeAllText];
   }
   else {
     return [textField resignFirstResponder];
@@ -822,6 +840,25 @@ COSynth(container)
     }
   }
   return self;
+}
+
++(instancetype)personWithEmailAddress:(NSString*)address{
+  NSParameterAssert(address != nil);
+  
+  ABRecordRef record = ABPersonCreate();
+  CFErrorRef error = NULL;
+  ABMultiValueIdentifier identifier;
+  
+  // email
+  ABMutableMultiValueRef email = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+  ABMultiValueAddValueAndLabel(email, CFBridgingRetain(address), CFSTR("other"), &identifier);
+  ABRecordSetValue(record, kABPersonEmailProperty, email, &error);
+  CFRelease(email);
+  
+  COPerson *person = [[COPerson alloc]initWithABRecordRef:record];
+  person.identifier = identifier;
+  
+  return person;
 }
 
 - (void)dealloc {
