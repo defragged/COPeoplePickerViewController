@@ -33,6 +33,7 @@
 @property (nonatomic, strong) UILabel *emailLabelLabel;
 @property (nonatomic, strong) UILabel *emailAddressLabel;
 @property (nonatomic, strong) COPerson *associatedRecord;
+@property (nonatomic, assign) ABMultiValueIdentifier identifier;
 
 - (void)adjustLabels;
 
@@ -333,6 +334,7 @@ static NSString *kCORecordFullName = @"fullName";
 static NSString *kCORecordEmailLabel = @"emailLabel";
 static NSString *kCORecordEmailAddress = @"emailAddress";
 static NSString *kCORecordRef = @"record";
+static NSString *kCORecordIdentifier = @"identifier";
 
 - (void)tokenField:(COTokenField *)tokenField updateAddressBookSearchResults:(NSArray *)records {
   // Split the search results into one email value per row
@@ -354,6 +356,7 @@ static NSString *kCORecordRef = @"record";
                              email.label, kCORecordEmailLabel,
                              email.address, kCORecordEmailAddress,
                              record, kCORecordRef,
+                             @(email.identifier), kCORecordIdentifier, // boxed as NSNumber
                              nil];
       if (![results containsObject:entry]) {
         [results addObject:entry];
@@ -418,6 +421,7 @@ static NSString *kCORecordRef = @"record";
   cell.emailLabelLabel.text = [result objectForKey:kCORecordEmailLabel];
   cell.emailAddressLabel.text = [result objectForKey:kCORecordEmailAddress];
   cell.associatedRecord = [result objectForKey:kCORecordRef];
+  cell.identifier = [[result objectForKey:kCORecordIdentifier] intValue];
   
   [cell adjustLabels];
   
@@ -428,7 +432,12 @@ static NSString *kCORecordRef = @"record";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   COEmailTableCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
-  [self.tokenField processToken:cell.nameLabel.text associatedRecord:cell.associatedRecord];
+  // Copy the record
+  COPerson *person = [cell.associatedRecord copy];
+  // Reassign the identifier (from the cell to the copied person)
+  person.identifier = cell.identifier;
+  
+  [self.tokenField processToken:cell.nameLabel.text associatedRecord:person];
 }
 
 @end
@@ -810,6 +819,13 @@ COSynth(container)
   }
 }
 
+-(id)copyWithZone:(NSZone*)zone{
+  COPerson *person = [[[self class]alloc]initWithABRecordRef:self.record];
+  person.identifier = self.identifier;
+  
+  return person;
+}
+
 - (NSString *)fullName {
   return CFBridgingRelease(ABRecordCopyCompositeName(record_));
 }
@@ -904,6 +920,7 @@ COSynth(nameLabel)
 COSynth(emailLabelLabel)
 COSynth(emailAddressLabel)
 COSynth(associatedRecord)
+COSynth(identifier)
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
