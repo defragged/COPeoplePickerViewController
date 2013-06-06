@@ -107,10 +107,10 @@ COSynth(person)
 @interface CORecordEmail : NSObject {
 @private
   ABMultiValueRef         emails_;
-  ABMultiValueIdentifier  identifier_;
 }
 @property (nonatomic, readonly) NSString *label;
 @property (nonatomic, readonly) NSString *address;
+@property (nonatomic, readonly) ABMultiValueIdentifier identifier;
 
 - (id)initWithEmails:(ABMultiValueRef)emails identifier:(ABMultiValueIdentifier)identifier;
 
@@ -387,6 +387,7 @@ static NSString *kCORecordRef = @"record";
   CFRelease(multi);
   
   COPerson *record = [[COPerson alloc] initWithABRecordRef:person];
+  record.identifier = identifier;
   
   [self.tokenField processToken:name associatedRecord:record];
   [self dismissModalViewControllerAnimated:YES];
@@ -850,11 +851,17 @@ COSynth(container)
   return record_;
 }
 
+-(NSString*)selectedEmail{
+  ABMultiValueRef multi = ABRecordCopyValue(self.record, kABPersonEmailProperty);
+  return CFBridgingRelease(ABMultiValueCopyValueAtIndex(multi, self.identifier));
+}
+
 @end
 
 // =============================================================================
 
 @implementation CORecordEmail
+COSynth(identifier);
 
 - (id)initWithEmails:(ABMultiValueRef)emails identifier:(ABMultiValueIdentifier)identifier {
   self = [super init];
