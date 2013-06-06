@@ -54,7 +54,9 @@
 @property (nonatomic, readonly) NSString *lastName;
 @property (nonatomic, readonly) NSString *nameSuffix;
 @property (nonatomic, readonly) NSArray *emailAddresses;
+@property (nonatomic, readonly) NSString *selectedEmail;
 @property (nonatomic, readonly) ABRecordRef record;
+@property (nonatomic, assign) ABMultiValueIdentifier identifier;
 
 - (id)initWithABRecordRef:(ABRecordRef)record;
 
