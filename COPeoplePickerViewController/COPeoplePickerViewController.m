@@ -56,7 +56,7 @@
 #define kTokenFieldTokenHeight (kTokenFieldFontSize + 4.0)
 #define kTokenFieldMaxTokenWidth 260.0
 #define kTokenFieldFrameKeyPath @"frame"
-#define kTokenFieldShadowHeight 14.0
+#define kTokenFieldShadowHeight 14.
 
 @interface COTokenField : UIView <UITextFieldDelegate>
 @property (nonatomic, weak) id<COTokenFieldDelegate> tokenFieldDelegate;
@@ -217,11 +217,14 @@ COSynth(shadowLayer)
   // Configure content view
   self.view.backgroundColor = [UIColor colorWithRed:0.859 green:0.886 blue:0.925 alpha:1.0];
   
+  self.automaticallyAdjustsScrollViewInsets = NO;
+    
   // Configure token field
   CGRect viewBounds = self.view.bounds;
   CGRect tokenFieldFrame = CGRectMake(0, 0, CGRectGetWidth(viewBounds), 44.0);
   
   self.tokenField = [[COTokenField alloc] initWithFrame:tokenFieldFrame];
+  
   self.tokenField.tokenFieldDelegate = self;
   self.tokenField.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
   [self.tokenField addObserver:self forKeyPath:kTokenFieldFrameKeyPath options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
@@ -287,7 +290,7 @@ COSynth(shadowLayer)
     tokenScrollBounds = CGRectMake(0, 0, CGRectGetWidth(bounds), maxHeight);  
   }
   [UIView animateWithDuration:0.25 animations:^{
-    self.tokenFieldScrollView.frame = tokenScrollBounds;
+    self.tokenFieldScrollView.frame = CGRectOffset(tokenScrollBounds, 0, CGRectGetHeight(self.navigationController.navigationBar.frame) + 15); // 15 is status bar
   }];
   
   if (!CGRectIsNull(keyboardFrame_)) {
