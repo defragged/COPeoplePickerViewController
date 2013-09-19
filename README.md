@@ -13,5 +13,6 @@ This fork differs from upstream slightly:
 * Adds a cancel button (`selectedRecords` returns `nil` after this is pressed).
 * Better handles email addresses entered directly into the field (rather than picked)
 * Validates email addresses when done is pressed. Shows an alert if any are invalid.
+* iOS 7 (only) support.
 
 If this functionality already existed, but I somehow missed it, please let me know.
