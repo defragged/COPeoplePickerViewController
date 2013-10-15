@@ -101,7 +101,7 @@ COSynth(person)
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"<%@ title: '%@'; person: '%@'>",
-          NSStringFromClass(isa), self.title, self.person];
+          NSStringFromClass([self class]), self.title, self.person];
 }
 
 @end
@@ -839,7 +839,7 @@ COSynth(container)
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"<%@ title: '%@'; associatedObj: '%@'>",
-          NSStringFromClass(isa), self.title, self.associatedObject];
+          NSStringFromClass([self class]), self.title, self.associatedObject];
 }
 
 @end
